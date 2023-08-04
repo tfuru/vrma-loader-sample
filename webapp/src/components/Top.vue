@@ -48,7 +48,7 @@ export default defineComponent({
             const canvas = renderer.domElement;
 
             _camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000)
-            _camera.position.set(0, 1.3, -3)
+            _camera.position.set(0, 1, -1)
             _camera.rotation.set(0, Math.PI, 0)
             
             const controls = new OrbitControls(_camera, canvas);
