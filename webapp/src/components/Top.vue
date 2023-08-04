@@ -1,5 +1,7 @@
 <template>
     <div class="top">
+        <label for="file">BVHファイルを選択してください</label>
+        <input type="file" name="file" :onchange="onChangeBvhFile"/>
         <div id="viewer"></div>
     </div>
 </template>
@@ -21,10 +23,9 @@ export default defineComponent({
         let _camera: THREE.PerspectiveCamera | null = null;
         const loader = new GLTFLoader();
         const bvhLoader = new BVHLoader();
-
+        let _vrm: any = null;
         let _mixer: THREE.AnimationMixer | null = null;
         const vrmFilePath = './po03.vrm';
-        const bvhFilePath = './Super_Yuppers_Motions.bvh';
 
         loader.register((parser: any) => {
             return new VRMLoaderPlugin(parser);
@@ -61,24 +62,30 @@ export default defineComponent({
 
             loader.load(vrmFilePath,
                 (gltf: { userData: { vrm: any; }; }) => {
-                    const vrm = gltf.userData.vrm;
-                    scene.add(vrm.scene);
-                    console.log(vrm);
+                    _vrm = gltf.userData.vrm;
+                    scene.add(_vrm.scene);
+                    console.log(_vrm);
                     
-                    // BVHファイルの読み込み
-                    bvhLoader.load(bvhFilePath, (result: { clip: any; }) => {
-                        _mixer = new THREE.AnimationMixer(vrm.scene);                        
-                        const animationClip = createClip(vrm, result);
-                        const action = _mixer.clipAction(animationClip);
-                        action.play();
-                    });
-
                     render();
                 },
                 (progress: { loaded: number; total: number; }) => console.log('Loading model...', 100.0 * (progress.loaded / progress.total), '%'),
                 (error: any) => console.error(error),
             );      
         };
+
+        const onChangeBvhFile = (e: any) => {
+            const file = e.target.files[0];
+            const blob = new Blob([file], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+
+            // BVHファイルの読み込み
+            bvhLoader.load(url, (result: { clip: any; }) => {
+                _mixer = new THREE.AnimationMixer(_vrm.scene);                        
+                const animationClip = createClip(_vrm, result);
+                const action = _mixer.clipAction(animationClip);
+                action.play();
+            });
+        }
 
         // 参考コード https://note.com/npaka/n/ne34d7b70743c
 
@@ -243,7 +250,9 @@ export default defineComponent({
             initView();
         });
 
-        return {};
+        return {
+            onChangeBvhFile
+        };
     }
 });
 </script>
