@@ -5,7 +5,7 @@
             <input type="file" id="bvhfile" :onchange="onChangeBvhFile"/>
         </div>
         <div>
-            <label for="vrmafile">VRAMファイルを選択してください</label>
+            <label for="vrmafile">VRMAファイル(.vrma)を選択してください</label>
             <input type="file" if="vrmafile" :onchange="onChangeVrmaFile"/>
         </div>
         <div>
@@ -113,7 +113,7 @@ export default defineComponent({
             });
         }
 
-        // VRAMファイルの読み込み
+        // VRMAファイルの読み込み
         const onChangeVrmaFile = (e: any) => {
             const file = e.target.files[0];
             const blob = new Blob([file], { type: "application/octet-stream" });
