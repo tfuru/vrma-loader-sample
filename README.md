@@ -24,5 +24,5 @@ https://vrm-c.github.io/bvh2vrma/
 ## webm to mp4
 
 ```
-ffmpeg -i capture.webm -c:v copy -c:a copy capture.mp4
+ffmpeg -i capture.webm capture.mp4
 ```
