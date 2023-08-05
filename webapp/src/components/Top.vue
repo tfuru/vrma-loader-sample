@@ -1,7 +1,13 @@
 <template>
     <div class="top">
-        <label for="file">BVHファイルを選択してください</label>
-        <input type="file" name="file" :onchange="onChangeBvhFile"/>
+        <div>
+            <label for="file">BVHファイルを選択してください</label>
+            <input type="file" name="file" :onchange="onChangeBvhFile"/>
+        </div>
+        <div>
+            <label for="file">VRAMファイルを選択してください</label>
+            <input type="file" name="file" :onchange="onChangeVrmaFile"/>
+        </div>
         <div id="viewer"></div>
     </div>
 </template>
@@ -15,6 +21,8 @@ import { BVHLoader } from 'three/examples/jsm/loaders/BVHLoader.js'
 import { VRMLoaderPlugin } from '@pixiv/three-vrm';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
+import { VRMALoader } from './modules/VRMALoader'
+
 export default defineComponent({
     name: 'TopComponent',
     setup() {
@@ -23,6 +31,8 @@ export default defineComponent({
         let _camera: THREE.PerspectiveCamera | null = null;
         const loader = new GLTFLoader();
         const bvhLoader = new BVHLoader();
+        const vrmaLoader = new VRMALoader();
+
         let _vrm: any = null;
         let _mixer: THREE.AnimationMixer | null = null;
         const vrmFilePath = './po03.vrm';
@@ -60,7 +70,8 @@ export default defineComponent({
             scene.add(light)
             render();
 
-            loader.load(vrmFilePath,
+            loader.load(
+                vrmFilePath,
                 (gltf: { userData: { vrm: any; }; }) => {
                     _vrm = gltf.userData.vrm;
                     scene.add(_vrm.scene);
@@ -83,6 +94,20 @@ export default defineComponent({
                 _mixer = new THREE.AnimationMixer(_vrm.scene);                        
                 const animationClip = createClip(_vrm, result);
                 const action = _mixer.clipAction(animationClip);
+                action.play();
+            });
+        }
+
+        // VRAMファイルの読み込み
+        const onChangeVrmaFile = (e: any) => {
+            const file = e.target.files[0];
+            const blob = new Blob([file], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+
+            // VRMAファイルの読み込み
+            vrmaLoader.load(url, _vrm, (result: { clip: THREE.AnimationClip; }) => {
+                _mixer = new THREE.AnimationMixer(_vrm.scene);               
+                const action = _mixer.clipAction(result.clip);
                 action.play();
             });
         }
@@ -112,7 +137,7 @@ export default defineComponent({
             const posTrack = findTrack(`${id}.position`, tracks);
             const rotTrack = findTrack(`${id}.quaternion`, tracks);
             console.log("createKeys", id, posTrack, rotTrack);
-            if (posTrack== null || rotTrack == null) return null;
+            if (posTrack== null && rotTrack == null) return null;
 
             const keys: any[] = [];
             const rate = 0.008; // サイズの調整
@@ -138,66 +163,68 @@ export default defineComponent({
                 ];
                 }
 
-                // 位置
-                if (id == "hip") {
-                key["pos"] = [
-                    -posTrack.values[i * 3] * rate,
-                    posTrack.values[i * 3 + 1] * rate,
-                    -posTrack.values[i * 3 + 2] * rate,
-                ];
+                // 位置 BVH 内に Hip 設定がある場合, pos が追加される
+                if (id == "Hip") {
+                    key["pos"] = [
+                        -posTrack.values[i * 3] * rate,
+                        posTrack.values[i * 3 + 1] * rate,
+                        -posTrack.values[i * 3 + 2] * rate,
+                    ];
                 }
+
                 keys.push(key);
             }
             if (keys.length == 0) return null;
             return keys;
         }
 
+        // ボーンリストの生成
+        const nameList = [
+            'head',
+            'neck',
+            'chest',
+            'spine',
+            'hips',
+            'rightShoulder',
+            'rightUpperArm',
+            'rightLowerArm',
+            'rightHand',
+            'leftShoulder',
+            'leftUpperArm',
+            'leftLowerArm',
+            'leftHand',
+            'rightUpperLeg',
+            'rightLowerLeg',
+            'rightFoot',
+            'leftUpperLeg',
+            'leftLowerLeg',
+            'leftFoot',
+        ];
+
+        const idList = [
+            'Head',
+            'Neck',
+            'Chest',
+            'Spine',
+            'Hips',
+            'RightShoulder',
+            'RightUpperArm',
+            'RightLowerArm',
+            'RightHand',
+            'LeftShoulder',
+            'LeftUpperArm',
+            'LeftLowerArm',
+            'LeftHand',
+            'RightUpperLeg',
+            'RightLowerLeg',
+            'RightFoot',
+            'LeftUpperLeg',
+            'LeftLowerLeg',
+            'LeftFoot',
+        ];
+
         // クリップの生成
-        const createClip = (vrm: any, bvh: any) => {
-            // ボーンリストの生成
-            const nameList = [
-                'head',
-                'neck',
-                'chest',
-                'spine',
-                'hips',
-                'rightShoulder',
-                'rightUpperArm',
-                'rightLowerArm',
-                'rightHand',
-                'leftShoulder',
-                'leftUpperArm',
-                'leftLowerArm',
-                'leftHand',
-                'rightUpperLeg',
-                'rightLowerLeg',
-                'rightFoot',
-                'leftUpperLeg',
-                'leftLowerLeg',
-                'leftFoot',
-            ];
-            const idList = [
-                'Head',
-                'Neck',
-                'Chest',
-                'Spine',
-                'Hips',
-                'RightShoulder',
-                'RightUpperArm',
-                'RightLowerArm',
-                'RightHand',
-                'LeftShoulder',
-                'LeftUpperArm',
-                'LeftLowerArm',
-                'LeftHand',
-                'RightUpperLeg',
-                'RightLowerLeg',
-                'RightFoot',
-                'LeftUpperLeg',
-                'LeftLowerLeg',
-                'LeftFoot',
-            ];            
-           
+        const createClip = (vrm: any, bvh: any) => {           
             console.log("vrm.humanoid", vrm.humanoid.humanBones);
             const bones = nameList.map((boneName) => {
                 return vrm.humanoid.humanBones[boneName].node;
@@ -251,7 +278,8 @@ export default defineComponent({
         });
 
         return {
-            onChangeBvhFile
+            onChangeBvhFile,
+            onChangeVrmaFile
         };
     }
 });
