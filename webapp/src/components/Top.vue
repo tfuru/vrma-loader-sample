@@ -1,12 +1,15 @@
 <template>
     <div class="top">
         <div>
-            <label for="file">BVHファイルを選択してください</label>
-            <input type="file" name="file" :onchange="onChangeBvhFile"/>
+            <label for="bvhfile">BVHファイルを選択してください</label>
+            <input type="file" id="bvhfile" :onchange="onChangeBvhFile"/>
         </div>
         <div>
-            <label for="file">VRAMファイルを選択してください</label>
-            <input type="file" name="file" :onchange="onChangeVrmaFile"/>
+            <label for="vrmafile">VRAMファイルを選択してください</label>
+            <input type="file" if="vrmafile" :onchange="onChangeVrmaFile"/>
+        </div>
+        <div>
+            <input type="button" :onclick="onCapture" :value="`${captureTime}秒 録画する`"/>
         </div>
         <div id="viewer"></div>
         <div>
@@ -29,6 +32,8 @@ import { VRMLoaderPlugin } from '@pixiv/three-vrm';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import { VRMALoader } from './modules/VRMALoader'
+import { CanvasCapture } from './modules/CanvasCapture'
+
 
 export default defineComponent({
     name: 'TopComponent',
@@ -43,6 +48,9 @@ export default defineComponent({
         let _vrm: any = null;
         let _mixer: THREE.AnimationMixer | null = null;
         const vrmFilePath = './po03.vrm';
+
+        // キャプチャ時間(秒)
+        const captureTime = 5;
 
         loader.register((parser: any) => {
             return new VRMLoaderPlugin(parser);
@@ -117,6 +125,20 @@ export default defineComponent({
                 const action = _mixer.clipAction(result.clip);
                 action.play();
             });
+        }
+
+        // キャンバスを録画する
+        const onCapture = (e: any) => {
+            CanvasCapture.capture(renderer.domElement, captureTime)
+                .then(([fileName, dataUrl]) => {
+                    const a = document.createElement("a");
+                    a.href = dataUrl;
+                    a.download = fileName;
+                    a.click();
+                })
+                .catch((error: any) => {
+                    console.error(error);
+                });
         }
 
         // 参考コード https://note.com/npaka/n/ne34d7b70743c
@@ -286,7 +308,9 @@ export default defineComponent({
 
         return {
             onChangeBvhFile,
-            onChangeVrmaFile
+            onChangeVrmaFile,
+            onCapture,
+            captureTime
         };
     }
 });
