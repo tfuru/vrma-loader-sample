@@ -19,4 +19,10 @@ https://note.com/npaka/n/ne34d7b70743c
 VRM用のAnimationClip に変換する事でアニメーションができる 
 
 bvh2vrma  
-https://vrm-c.github.io/bvh2vrma/  
+https://vrm-c.github.io/bvh2vrma/   
+
+## webm to mp4
+
+```
+ffmpeg -i capture.webm -c:v copy -c:a copy capture.mp4
+```
