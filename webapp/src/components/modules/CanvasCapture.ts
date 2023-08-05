@@ -49,7 +49,7 @@ export class CanvasCapture {
                 CanvasCapture.blobToDataURL(blob)
                     .then(async (dataURL) => {
                         // resolve(['capture.webm', dataURL]);
-                        console.log('dataURL', dataURL);
+                        // console.log('dataURL', dataURL);
                         // webm -> mp4に変換
                         await CanvasCapture._ffmpeg.writeFile('capture.webm', await fetchFile(dataURL));
                         console.log('ffmpeg writeFile');
