@@ -3,11 +3,12 @@
 */
 
 import { FFmpeg } from '@ffmpeg/ffmpeg'
-import type { LogEvent } from '@ffmpeg/ffmpeg/dist/esm/types'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
 
 export class CanvasCapture {
     private static _ffmpeg = new FFmpeg();
+    private static baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.1/dist/umd';
+
     /* キャプチャーを開始する
         * @param {HTMLCanvasElement} canvas キャプチャー対象のCanvas
         * @param {number} captureTime キャプチャー時間(秒)
@@ -25,7 +26,13 @@ export class CanvasCapture {
     public static capture = async (canvas: HTMLCanvasElement, captureTime: number): Promise<[string, string]> => {
         console.log('capture');
         // ffmpegの初期化
-        await this._ffmpeg.load();
+        // await this._ffmpeg.load({});
+        
+        await this._ffmpeg.load({
+            coreURL: await toBlobURL(`${this.baseURL}/ffmpeg-core.js`, 'text/javascript'),
+            wasmURL: await toBlobURL(`${this.baseURL}/ffmpeg-core.wasm`, 'applicaiton/wasm')
+        });
+        
         console.log('_ffmpeg.load');
 
         return new Promise<[string, string]>((resolve, reject) => {
