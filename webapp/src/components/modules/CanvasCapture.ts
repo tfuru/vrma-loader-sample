@@ -49,9 +49,9 @@ export class CanvasCapture {
                         await CanvasCapture._ffmpeg.exec(['-i', 'capture.webm', 'capture.mp4']);
                         console.log('ffmpeg exec');
                         const data = await CanvasCapture._ffmpeg.readFile('capture.mp4');
-                        console.log('ffmpeg readFile', data);
+                        console.log('ffmpeg readFile');
                         const mp4 = URL.createObjectURL(new Blob([(data as Uint8Array).buffer], { type: 'video/mp4' }));
-                        console.log('ffmpeg mp4', mp4);
+                        console.log('ffmpeg mp4');
                         resolve(['capture.mp4', mp4]);
                     });
             };
