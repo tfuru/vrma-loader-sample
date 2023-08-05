@@ -9,6 +9,13 @@
             <input type="file" name="file" :onchange="onChangeVrmaFile"/>
         </div>
         <div id="viewer"></div>
+        <div>
+            <h3>参考サイト</h3>
+            <p>
+            <a href="https://vrm.dev/vrm_animation/" target="_blank">bvh2vrma</a>
+            BVHファイルをVRMAnimationに変換するサイト
+            </p>
+        </div>      
     </div>
 </template>
   

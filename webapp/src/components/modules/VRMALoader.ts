@@ -1,4 +1,4 @@
-import { AnimationClip, Skeleton, Loader, LoadingManager, Quaternion } from 'three';
+import { AnimationClip, Loader, LoadingManager } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 export interface VRMA {
