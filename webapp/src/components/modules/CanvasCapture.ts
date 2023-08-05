@@ -1,7 +1,13 @@
 /** Canvasを録画して動画ファイルを生成するクラス 
  * @class CanvasCapture
 */
+
+import { FFmpeg } from '@ffmpeg/ffmpeg'
+import type { LogEvent } from '@ffmpeg/ffmpeg/dist/esm/types'
+import { fetchFile, toBlobURL } from '@ffmpeg/util'
+
 export class CanvasCapture {
+    private static _ffmpeg = new FFmpeg();
     /* キャプチャーを開始する
         * @param {HTMLCanvasElement} canvas キャプチャー対象のCanvas
         * @param {number} captureTime キャプチャー時間(秒)
@@ -16,8 +22,14 @@ export class CanvasCapture {
         *     console.log(dataURL);
         * });
         */
-    public static capture = (canvas: HTMLCanvasElement, captureTime: number): Promise<[string, string]> => {
+    public static capture = async (canvas: HTMLCanvasElement, captureTime: number): Promise<[string, string]> => {
+        console.log('capture');
+        // ffmpegの初期化
+        await this._ffmpeg.load();
+        console.log('_ffmpeg.load');
+
         return new Promise<[string, string]>((resolve, reject) => {
+            
             // 生成した 動画のURLを返す
             const stream = canvas.captureStream();
             const recorder = new MediaRecorder(stream);
@@ -28,8 +40,19 @@ export class CanvasCapture {
             recorder.onstop = function (e) {
                 const blob = new Blob(chunks, { "type": "video/webm;codecs=vp9" });
                 CanvasCapture.blobToDataURL(blob)
-                    .then((dataURL) => {
-                        resolve(['capture.webm', dataURL]);
+                    .then(async (dataURL) => {
+                        // resolve(['capture.webm', dataURL]);
+                        console.log('dataURL', dataURL);
+                        // webm -> mp4に変換
+                        await CanvasCapture._ffmpeg.writeFile('capture.webm', await fetchFile(dataURL));
+                        console.log('ffmpeg writeFile');
+                        await CanvasCapture._ffmpeg.exec(['-i', 'capture.webm', 'capture.mp4']);
+                        console.log('ffmpeg exec');
+                        const data = await CanvasCapture._ffmpeg.readFile('capture.mp4');
+                        console.log('ffmpeg readFile', data);
+                        const mp4 = URL.createObjectURL(new Blob([(data as Uint8Array).buffer], { type: 'video/mp4' }));
+                        console.log('ffmpeg mp4', mp4);
+                        resolve(['capture.mp4', mp4]);
                     });
             };
             recorder.start();            

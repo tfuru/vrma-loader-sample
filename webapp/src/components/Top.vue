@@ -10,6 +10,7 @@
         </div>
         <div>
             <input type="button" :onclick="onCapture" :value="`${captureTime}秒 録画する`"/>
+            <p>※ ffmpeg.wasmを利用して webm を mp4 へ変換するので<br />変換に数分かかる場合があります</p>
         </div>
         <div id="viewer"></div>
         <div>
