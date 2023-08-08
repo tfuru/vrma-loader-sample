@@ -3,12 +3,8 @@
         <h3>VRMA, BVHをアップロードして VRMを動かすやつ</h3>
         <p>mocopiで作成できるBVH(.bvh)やそのBVHをVRMA(.vrma)に変換したファイルを<br />アップロードするとVRMが動きます</p>
         <div class="container">
-            <label for="bvhfile">BVHファイル(.bvh)を使う場合はこちら</label>
-            <input type="file" id="bvhfile" :onchange="onChangeBvhFile"/>
-        </div>
-        <div class="container">
-            <label for="vrmafile">VRMAファイル(.vrma)を使う場合はこちら</label>
-            <input type="file" if="vrmafile" :onchange="onChangeVrmaFile"/>
+            <label for="bvhvrmafile">BVHファイル(.bvh),VRMAファイル(.vrma)を選択</label>
+            <input type="file" if="vrmafile" :onchange="onChangeBvhVrmaFile"/>
         </div>
         <div class="container">
             <label for="vrmfile">VRMファイル(.vrm)を選択してください</label>
@@ -153,6 +149,17 @@ export default defineComponent({
             const url = URL.createObjectURL(blob);
             
             loadVrmFile(url);
+        }
+
+        // bvh,vrma ファイルの読み込み
+        const onChangeBvhVrmaFile = (e: any) => {
+            const file = e.target.files[0];
+            const fileName = file.name.toLowerCase();
+            if (fileName.endsWith(".bvh")) {
+                onChangeBvhFile(e);
+            } else if (fileName.endsWith(".vrma")) {
+                onChangeVrmaFile(e);
+            }
         }
 
         // キャンバスを録画する
@@ -344,6 +351,7 @@ export default defineComponent({
             onChangeVrmaFile,
             onChangeVrmFile,
             onCapture,
+            onChangeBvhVrmaFile,
             captureTime
         };
     }
