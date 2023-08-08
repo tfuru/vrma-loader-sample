@@ -1,14 +1,22 @@
 <template>
     <div class="top">
-        <div>
+        <h3>VRMA, BVHをアップロードして VRMを動かすやつ</h3>
+        <p>mocopiで作成できるBVH(.bvh)やそのBVHをVRMA(.vrma)に変換したファイルを<br />アップロードするとVRMが動きます</p>
+        <div class="container">
             <label for="bvhfile">BVHファイルを選択してください</label>
             <input type="file" id="bvhfile" :onchange="onChangeBvhFile"/>
         </div>
-        <div>
+        <div class="container">
             <label for="vrmafile">VRMAファイル(.vrma)を選択してください</label>
             <input type="file" if="vrmafile" :onchange="onChangeVrmaFile"/>
         </div>
-        <div>
+
+        <div class="container">
+            <label for="vrmfile">VRMファイル(.vrm)を選択してください</label>
+            <input type="file" if="vrmfile" :onchange="onChangeVrmFile"/>
+        </div>
+
+        <div class="container">
             <input type="button" :onclick="onCapture" :value="`${captureTime}秒 録画する`"/>
             <p>※ ffmpeg.wasmを利用して webm を mp4 へ変換するので<br />変換に数分かかる場合があります</p>
         </div>
@@ -86,19 +94,29 @@ export default defineComponent({
             scene.add(light)
             render();
 
+            // VRM ファイルを読み込む
+            loadVrmFile(vrmFilePath);
+        };
+        
+        // VRM ファイルを読み込む
+        const loadVrmFile = (vrmFilePath: string) => {
+            // シーンから VRMを削除
+            if (_vrm != null) {
+                scene.remove(_vrm.scene);
+            }
+            
+            // VRM ファイルを読み込む
             loader.load(
                 vrmFilePath,
                 (gltf: { userData: { vrm: any; }; }) => {
                     _vrm = gltf.userData.vrm;
                     scene.add(_vrm.scene);
-                    console.log(_vrm);
-                    
                     render();
                 },
                 (progress: { loaded: number; total: number; }) => console.log('Loading model...', 100.0 * (progress.loaded / progress.total), '%'),
                 (error: any) => console.error(error),
-            );      
-        };
+            );
+        }
 
         const onChangeBvhFile = (e: any) => {
             const file = e.target.files[0];
@@ -126,6 +144,15 @@ export default defineComponent({
                 const action = _mixer.clipAction(result.clip);
                 action.play();
             });
+        }
+        
+        // VRM ファイルの読み込み
+        const onChangeVrmFile = (e: any) => {
+            const file = e.target.files[0];
+            const blob = new Blob([file], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+            
+            loadVrmFile(url);
         }
 
         // キャンバスを録画する
@@ -315,6 +342,7 @@ export default defineComponent({
         return {
             onChangeBvhFile,
             onChangeVrmaFile,
+            onChangeVrmFile,
             onCapture,
             captureTime
         };
@@ -326,6 +354,23 @@ export default defineComponent({
 <style scoped lang="scss">
 #top {
     width: 100%;
+}
+
+.container {
+    margin: 0 auto;
+    width: 600px;
+    /* height: 60px; */
+    padding: 5px 0px;
+
+    text-align: left;
+
+    input {
+        font-size: medium;
+    }
+}
+
+label {
+    display: block;
 }
 
 #viewer {
