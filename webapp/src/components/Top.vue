@@ -166,7 +166,7 @@ export default defineComponent({
         const createKeys = (i: number, id: string, tracks: any[]) => {
             const posTrack = findTrack(`${id}.position`, tracks);
             const rotTrack = findTrack(`${id}.quaternion`, tracks);
-            console.log("createKeys", id, posTrack, rotTrack);
+            // console.log("createKeys", id, posTrack, rotTrack);
             if (posTrack== null && rotTrack == null) return null;
 
             const keys: any[] = [];
@@ -179,18 +179,18 @@ export default defineComponent({
 
                 // 回転
                 if (id == "rButtock" || id == "lButtock") {
-                const id2 = id == "rButtock" ? "rThigh" : "lThigh";
-                let q1 = values2quaternion(rotTrack.values, i);
-                const rotTrack2 = findTrack(`${id2}.quaternion`, tracks);
-                q1.multiply(values2quaternion(rotTrack2.values, i));
-                key["rot"] = [-q1.x, q1.y, -q1.z, q1.w];
+                    const id2 = id == "rButtock" ? "rThigh" : "lThigh";
+                    let q1 = values2quaternion(rotTrack.values, i);
+                    const rotTrack2 = findTrack(`${id2}.quaternion`, tracks);
+                    q1.multiply(values2quaternion(rotTrack2.values, i));
+                    key["rot"] = [-q1.x, q1.y, -q1.z, q1.w];
                 } else {
-                key["rot"] = [
-                    -rotTrack.values[i * 4],
-                    rotTrack.values[i * 4 + 1],
-                    -rotTrack.values[i * 4 + 2],
-                    rotTrack.values[i * 4 + 3],
-                ];
+                    key["rot"] = [
+                        -rotTrack.values[i * 4],
+                        rotTrack.values[i * 4 + 1],
+                        -rotTrack.values[i * 4 + 2],
+                        rotTrack.values[i * 4 + 3],
+                    ];
                 }
 
                 // 位置 BVH 内に Hip 設定がある場合, pos が追加される
@@ -231,26 +231,31 @@ export default defineComponent({
             'leftFoot',
         ];
 
+        // mocopi BVHのボーンリスト
+        // https://www.sony.net/Products/mocopi-dev/jp/documents/Home/TechSpec.html
+        // Unity Humanoid Avatar
+        // https://wiki.virtualcast.jp/wiki/unity/humanoid
+
         const idList = [
-            'Head',
-            'Neck',
-            'Chest',
-            'Spine',
-            'Hips',
-            'RightShoulder',
-            'RightUpperArm',
-            'RightLowerArm',
-            'RightHand',
-            'LeftShoulder',
-            'LeftUpperArm',
-            'LeftLowerArm',
-            'LeftHand',
-            'RightUpperLeg',
-            'RightLowerLeg',
-            'RightFoot',
-            'LeftUpperLeg',
-            'LeftLowerLeg',
-            'LeftFoot',
+            'root',
+            'neck_1',
+            'torso_6',
+            'torso_3',
+            'root',
+            'r_shoulder',
+            'r_up_arm',
+            'r_low_arm',
+            'r_hand',
+            'l_shoulder',
+            'l_up_arm',
+            'l_low_arm',
+            'l_hand',
+            'r_up_leg',
+            'r_low_leg',
+            'r_foot',
+            'l_up_leg',
+            'l_low_leg',
+            'l_foot',
         ];
 
         // クリップの生成

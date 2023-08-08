@@ -31,26 +31,31 @@ export class VRMALoader extends Loader {
         'leftFoot',
     ];
 
+    // mocopi BVHのボーンリスト
+    // https://www.sony.net/Products/mocopi-dev/jp/documents/Home/TechSpec.html
+    // Unity Humanoid Avatar
+    // https://wiki.virtualcast.jp/wiki/unity/humanoid
+
     private idList = [
-        'Head',
-        'Neck',
-        'Chest',
-        'Spine',
-        'Hips',
-        'RightShoulder',
-        'RightUpperArm',
-        'RightLowerArm',
-        'RightHand',
-        'LeftShoulder',
-        'LeftUpperArm',
-        'LeftLowerArm',
-        'LeftHand',
-        'RightUpperLeg',
-        'RightLowerLeg',
-        'RightFoot',
-        'LeftUpperLeg',
-        'LeftLowerLeg',
-        'LeftFoot',
+        'root',
+        'neck_1',
+        'torso_4',
+        'torso_3',
+        'root',
+        'r_shoulder',
+        'r_up_arm',
+        'r_low_arm',
+        'r_hand',
+        'l_shoulder',
+        'l_up_arm',
+        'l_low_arm',
+        'l_hand',
+        'r_up_leg',
+        'r_low_leg',
+        'r_foot',
+        'l_up_leg',
+        'l_low_leg',
+        'l_foot',
     ];
 
     public constructor(manager?: LoadingManager) {
@@ -70,13 +75,13 @@ export class VRMALoader extends Loader {
             // console.log("gltf", gltf);
             
             const animations = gltf.animations[0];
-            // console.log("animations", animations);
+            console.log("animations", animations);
 
             // ボーンリストの生成 vrm の humanBones から取得する
             const bones = this.bonesNameList.map((boneName) => {
                 return vrm.humanoid.humanBones[boneName].node;
             });
-            // console.log("bones", bones);
+            console.log("bones", bones);
 
             // ここでボーンの階層構造を生成する
             const hierarchy: any[] = [];
