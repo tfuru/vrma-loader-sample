@@ -5,6 +5,9 @@
         <div class="container">
             <label for="bvhvrmafile">BVHファイル(.bvh),VRMAファイル(.vrma)を選択</label>
             <input type="file" if="vrmafile" :onchange="onChangeBvhVrmaFile"/>
+            <div>
+                <p>サンプル <a href="./sample.bvh">BVHファイル</a> / <a href="./sample.vrma"> VRMAファイル</a></p>
+            </div>        
         </div>
         <div class="container">
             <label for="vrmfile">VRMファイル(.vrm)を選択してください</label>
