@@ -55,7 +55,7 @@ export default defineComponent({
         const vrmFilePath = './po03.vrm';
 
         // キャプチャ時間(秒)
-        const captureTime = 5;
+        const captureTime = 15;
 
         loader.register((parser: any) => {
             return new VRMLoaderPlugin(parser);
