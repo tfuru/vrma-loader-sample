@@ -3,17 +3,16 @@
         <h3>VRMA, BVHをアップロードして VRMを動かすやつ</h3>
         <p>mocopiで作成できるBVH(.bvh)やそのBVHをVRMA(.vrma)に変換したファイルを<br />アップロードするとVRMが動きます</p>
         <div class="container">
+            <label for="vrmfile">VRMファイル(.vrm)を選択してください</label>
+            <input type="file" if="vrmfile" :onchange="onChangeVrmFile"/>
+        </div>
+        <div class="container">
             <label for="bvhvrmafile">BVHファイル(.bvh),VRMAファイル(.vrma)を選択</label>
             <input type="file" if="vrmafile" :onchange="onChangeBvhVrmaFile"/>
             <div>
                 <p>サンプル <a href="./sample.bvh">BVHファイル</a> / <a href="./sample.vrma"> VRMAファイル</a></p>
             </div>        
         </div>
-        <div class="container">
-            <label for="vrmfile">VRMファイル(.vrm)を選択してください</label>
-            <input type="file" if="vrmfile" :onchange="onChangeVrmFile"/>
-        </div>
-
         <div class="container">
             <p>録画 ffmpeg.wasmを利用して webm を mp4 へ変換するので<br />変換に数分かかる場合があります</p>
             <input type="button" :onclick="onCapture" :value="`${captureTime}秒 録画する`"/>
