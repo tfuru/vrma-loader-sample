@@ -8,55 +8,37 @@ export interface VRMA {
 export class VRMALoader extends Loader {
     private _loader = new GLTFLoader();
 
-    // ボーンリストの生成
-    private bonesNameList = [
-        'head',
-        'neck',
-        'chest',
-        'spine',
-        'hips',
-        'rightShoulder',
-        'rightUpperArm',
-        'rightLowerArm',
-        'rightHand',
-        'leftShoulder',
-        'leftUpperArm',
-        'leftLowerArm',
-        'leftHand',
-        'rightUpperLeg',
-        'rightLowerLeg',
-        'rightFoot',
-        'leftUpperLeg',
-        'leftLowerLeg',
-        'leftFoot',
-    ];
-
-    // mocopi BVHのボーンリスト
-    // https://www.sony.net/Products/mocopi-dev/jp/documents/Home/TechSpec.html
+    // ボーンリスト
     // Unity Humanoid Avatar
     // https://wiki.virtualcast.jp/wiki/unity/humanoid
 
-    private idList = [
-        'root',
-        'neck_1',
-        'torso_4',
-        'torso_3',
-        'root',
-        'r_shoulder',
-        'r_up_arm',
-        'r_low_arm',
-        'r_hand',
-        'l_shoulder',
-        'l_up_arm',
-        'l_low_arm',
-        'l_hand',
-        'r_up_leg',
-        'r_low_leg',
-        'r_foot',
-        'l_up_leg',
-        'l_low_leg',
-        'l_foot',
-    ];
+    // mocopi BVHのボーンリスト
+    // https://www.sony.net/Products/mocopi-dev/jp/documents/Home/TechSpec.html
+
+    // MotionBuilder のボーン定義
+    // https://help.autodesk.com/view/MOBPRO/2023/JPN/?guid=GUID-6FD84BDA-2936-4142-B547-B2205EA0306E
+
+    private bonesNameList = {
+        'head':          ['root',       'head',          'head'],
+        'neck':          ['neck_1',     'neck',          'neck'],
+        'chest':         ['torso_4',    'spine1',        'chest'],
+        'spine':         ['torso_3',    'spine3',        'spine'],
+        'hips':          ['torso_2',    'hips',          'hips'],
+        'rightShoulder': ['r_shoulder', 'rightshoulder', 'rightshoulder'],
+        'rightUpperArm': ['r_up_arm',   'rightarm',      'rightupperarm'],
+        'rightLowerArm': ['r_low_arm',  'rightforearm',  'rightlowerarm'],
+        'rightHand':     ['r_hand',     'righthand',     'righthand'],
+        'leftShoulder':  ['l_shoulder', 'leftshoulder',  'leftshoulder'],
+        'leftUpperArm':  ['l_up_arm',   'leftarm',       'leftupperarm'],
+        'leftLowerArm':  ['l_low_arm',  'leftforearm',   'leftlowerarm'],
+        'leftHand':      ['l_hand',     'lefthand',      'lefthand'],
+        'rightUpperLeg': ['r_up_leg',   'rightupleg',    'rightupperleg'],
+        'rightLowerLeg': ['r_low_leg',  'rightleg',      'rightlowerleg'],
+        'rightFoot':     ['r_foot',     'rightfoot',     'rightfoot'],
+        'leftUpperLeg':  ['l_up_leg',   'leftupleg',     'leftupperleg'],
+        'leftLowerLeg':  ['l_low_leg',  'leftleg',       'leftlowerleg'],
+        'leftFoot':      ['l_foot',     'leftfoot',      'leftfoot'],
+    };
 
     public constructor(manager?: LoadingManager) {
         super(manager);
@@ -77,21 +59,37 @@ export class VRMALoader extends Loader {
             const animations = gltf.animations[0];
             console.log("animations", animations);
 
-            // ボーンリストの生成 vrm の humanBones から取得する
-            const bones = this.bonesNameList.map((boneName) => {
-                return vrm.humanoid.humanBones[boneName].node;
+            // VRMA 内のトラックに含まれるボーン名を取得する
+            animations.tracks.forEach((track: any) => {
+                const name = track.name.toLowerCase().replace(/\.(position|quaternion|scale)$/,"");
+                console.log("name", name);
+            });
+
+            // ボーンリストの生成 vrm の humanBones から取得する?
+            // const bonesNameList = gltf.userData.gltfExtensions.VRMC_vrm_animation.humanoid.humanBones;
+            // console.log("bonesNameList", bonesNameList);
+            const bones = Object.keys(this.bonesNameList).map((key) => {
+                // console.log("key", key, vrm.humanoid.humanBones[key]);
+                if (key in vrm.humanoid.humanBones){
+                    return vrm.humanoid.humanBones[key].node;
+                }
+                return false;
             });
             console.log("bones", bones);
 
             // ここでボーンの階層構造を生成する
             const hierarchy: any[] = [];
-            for (let i = 0; i < this.idList.length; i++) {
-                const keys = this.createKeys(i, this.idList[i], animations.tracks);
-                if (keys != null) {
-                    hierarchy.push({ keys: keys });
+            Object.keys(this.bonesNameList).forEach((key, i) => {
+                const idList = (this.bonesNameList as any)[key];
+                let keys = null;
+                for (const id of idList) {
+                    keys = this.createKeys(i, id, animations.tracks);
+                    if (keys != null) break;
                 }
-            }
-            // console.log("hierarchy", hierarchy);
+                if (keys == null) return false;
+                hierarchy.push({ keys: keys });
+            });
+            console.log("hierarchy", hierarchy);
 
             const clip = AnimationClip.parseAnimation(
                 { hierarchy: hierarchy },
@@ -133,7 +131,7 @@ export class VRMALoader extends Loader {
     // トラックの取得
     private findTrack = (name: string, tracks: any[]) => {
         for (let i = 0; i < tracks.length; i++) {
-            if (tracks[i].name == name) return tracks[i];
+            if (tracks[i].name.toLowerCase() == name.toLowerCase()) return tracks[i];
         }
         return null;
     }
