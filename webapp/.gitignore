@@ -25,3 +25,5 @@ pnpm-debug.log*
 # *.bvh
 # *.vrma
 # *.vrm
+
+._*
