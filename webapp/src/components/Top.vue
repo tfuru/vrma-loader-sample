@@ -368,7 +368,7 @@ export default defineComponent({
 
 .container {
     margin: 0 auto;
-    /* width: 600px; */
+    width: 350px;
     /* height: 60px; */
     padding: 5px 0px;
 
