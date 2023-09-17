@@ -16,7 +16,7 @@
         <div class="container">
             <p>録画 ffmpeg.wasmを利用して webm を mp4 へ変換するので<br />変換に数分かかる場合があります</p>
             <div>
-                <input id="valuecapturetime" type="number" min="1" max="60" step="1" v-model="captureTime" />
+                <input id="valuecapturetime" type="number" min="1" max="60" step="1" :value="captureTime" @input="onInputCaptureTime" />
                 <input type="button" :onclick="onCapture" :value="`秒 録画する`"/>
                 <p id="capturestatustext">{{captureStatusText}}</p>
             </div>
@@ -61,7 +61,7 @@ export default defineComponent({
         const vrmFilePath = './po03.vrm';
 
         // キャプチャ時間(秒)
-        const captureTime = 15;
+        let captureTime = 15;
         const captureStatusText = ref("")
 
         loader.register((parser: any) => {
@@ -168,9 +168,13 @@ export default defineComponent({
                 onChangeVrmaFile(e);
             }
         }
+        
+        const onInputCaptureTime = (e: any) => {
+            captureTime = parseInt(e.target.value);
+            console.log("onInputCaptureTime", captureTime);
+        }
 
         // キャンバスを録画する
-
         const onCapture = (e: any) => {
             var progress = function (type: string, message: string, v: number) {
                 let text = "";
@@ -380,7 +384,8 @@ export default defineComponent({
             onCapture,
             onChangeBvhVrmaFile,
             captureTime,
-            captureStatusText
+            captureStatusText,
+            onInputCaptureTime
         };
     }
 });
