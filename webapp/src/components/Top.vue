@@ -15,7 +15,11 @@
         </div>
         <div class="container">
             <p>録画 ffmpeg.wasmを利用して webm を mp4 へ変換するので<br />変換に数分かかる場合があります</p>
-            <input type="button" :onclick="onCapture" :value="`${captureTime}秒 録画する`"/>
+            <div>
+                <input id="valuecapturetime" type="number" min="1" max="60" step="1" v-model="captureTime" />
+                <input type="button" :onclick="onCapture" :value="`秒 録画する`"/>
+                <p id="capturestatustext">{{captureStatusText}}</p>
+            </div>
         </div>
 
         <div id="viewer"></div>
@@ -30,7 +34,7 @@
 </template>
   
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -58,6 +62,7 @@ export default defineComponent({
 
         // キャプチャ時間(秒)
         const captureTime = 15;
+        const captureStatusText = ref("")
 
         loader.register((parser: any) => {
             return new VRMLoaderPlugin(parser);
@@ -165,13 +170,33 @@ export default defineComponent({
         }
 
         // キャンバスを録画する
+
         const onCapture = (e: any) => {
-            CanvasCapture.capture(renderer.domElement, captureTime)
-                .then(([fileName, dataUrl]) => {
+            var progress = function (type: string, message: string, v: number) {
+                let text = "";
+                switch(type){
+                    case "onstart":
+                        text = `録画開始 ${captureTime}秒後に終了`;
+                        break;
+                    case "onstop":
+                        text = "録画終了";
+                        break;
+                    case "progress":
+                        text = `webm -> mp4 変換中 ${message}`;
+                        break;
+                }
+                captureStatusText.value = text;
+            }
+            CanvasCapture.capture(renderer.domElement, captureTime, progress).then(([fileName, dataUrl]) => {
                     const a = document.createElement("a");
                     a.href = dataUrl;
                     a.download = fileName;
                     a.click();
+
+                    // 3秒ごにステータステキストを消す
+                    setTimeout(() => {
+                        captureStatusText.value = "";
+                    }, 3000);
                 })
                 .catch((error: any) => {
                     console.error(error);
@@ -354,7 +379,8 @@ export default defineComponent({
             onChangeVrmFile,
             onCapture,
             onChangeBvhVrmaFile,
-            captureTime
+            captureTime,
+            captureStatusText
         };
     }
 });
@@ -396,5 +422,15 @@ label {
         margin: 0 auto;
     }
 }
+
+#valuecapturetime {
+    float: left;
+    margin-right: 10px;
+}
+
+#capturestatustext {
+    color: red;
+}
+
 </style>
   
