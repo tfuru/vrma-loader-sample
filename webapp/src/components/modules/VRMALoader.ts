@@ -19,25 +19,25 @@ export class VRMALoader extends Loader {
     // https://help.autodesk.com/view/MOBPRO/2023/JPN/?guid=GUID-6FD84BDA-2936-4142-B547-B2205EA0306E
 
     private bonesNameList = {
-        'head':          ['root',       'head',          'head'],
-        'neck':          ['neck_1',     'neck',          'neck'],
-        'chest':         ['torso_4',    'spine1',        'chest'],
-        'spine':         ['torso_3',    'spine3',        'spine'],
-        'hips':          ['torso_2',    'hips',          'hips'],
-        'rightShoulder': ['r_shoulder', 'rightshoulder', 'rightshoulder'],
-        'rightUpperArm': ['r_up_arm',   'rightarm',      'rightupperarm'],
-        'rightLowerArm': ['r_low_arm',  'rightforearm',  'rightlowerarm'],
-        'rightHand':     ['r_hand',     'righthand',     'righthand'],
-        'leftShoulder':  ['l_shoulder', 'leftshoulder',  'leftshoulder'],
-        'leftUpperArm':  ['l_up_arm',   'leftarm',       'leftupperarm'],
-        'leftLowerArm':  ['l_low_arm',  'leftforearm',   'leftlowerarm'],
-        'leftHand':      ['l_hand',     'lefthand',      'lefthand'],
-        'rightUpperLeg': ['r_up_leg',   'rightupleg',    'rightupperleg'],
-        'rightLowerLeg': ['r_low_leg',  'rightleg',      'rightlowerleg'],
-        'rightFoot':     ['r_foot',     'rightfoot',     'rightfoot'],
-        'leftUpperLeg':  ['l_up_leg',   'leftupleg',     'leftupperleg'],
-        'leftLowerLeg':  ['l_low_leg',  'leftleg',       'leftlowerleg'],
-        'leftFoot':      ['l_foot',     'leftfoot',      'leftfoot'],
+        'head':          ['root',       'head',          'head',            'head'],
+        'neck':          ['neck_1',     'neck',          'neck',            'neck'],
+        'chest':         ['torso_4',    'spine1',        'chest',           'spine1'],
+        'spine':         ['torso_3',    'spine3',        'spine',           'spine2'],
+        'hips':          ['torso_2',    'hips',          'hips',            'hips'],
+        'rightShoulder': ['r_shoulder', 'rightshoulder', 'rightshoulder',   'shoulder_r'],
+        'rightUpperArm': ['r_up_arm',   'rightarm',      'rightupperarm',   'arm_r'],
+        'rightLowerArm': ['r_low_arm',  'rightforearm',  'rightlowerarm',   'forearm_r'],
+        'rightHand':     ['r_hand',     'righthand',     'righthand',       'hand_r'],
+        'leftShoulder':  ['l_shoulder', 'leftshoulder',  'leftshoulder',    'shoulder_l'],
+        'leftUpperArm':  ['l_up_arm',   'leftarm',       'leftupperarm',    'arm_l'],
+        'leftLowerArm':  ['l_low_arm',  'leftforearm',   'leftlowerarm',    'forearm_l'],
+        'leftHand':      ['l_hand',     'lefthand',      'lefthand',        'hand_l'],
+        'rightUpperLeg': ['r_up_leg',   'rightupleg',    'rightupperleg',   'upleg_r'],
+        'rightLowerLeg': ['r_low_leg',  'rightleg',      'rightlowerleg',   'leg_r'],
+        'rightFoot':     ['r_foot',     'rightfoot',     'rightfoot',       'foot_r'],
+        'leftUpperLeg':  ['l_up_leg',   'leftupleg',     'leftupperleg',    'upleg_l'],
+        'leftLowerLeg':  ['l_low_leg',  'leftleg',       'leftlowerleg',    'leg_l'],
+        'leftFoot':      ['l_foot',     'leftfoot',      'leftfoot',        'foot_l'],
     };
 
     public constructor(manager?: LoadingManager) {
@@ -62,7 +62,7 @@ export class VRMALoader extends Loader {
             // VRMA 内のトラックに含まれるボーン名を取得する
             animations.tracks.forEach((track: any) => {
                 const name = track.name.toLowerCase().replace(/\.(position|quaternion|scale)$/,"");
-                console.log("name", name);
+                console.log("tracks name", name);
             });
 
             // ボーンリストの生成 vrm の humanBones から取得する?
@@ -165,7 +165,7 @@ export class VRMALoader extends Loader {
             ];
 
             // 位置
-            if (id == "Hip") {
+            if (id.toLowerCase() == "hip") {
                 key["pos"] = [
                     -posTrack.values[i * 3] * rate,
                     posTrack.values[i * 3 + 1] * rate,
