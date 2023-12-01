@@ -1,7 +1,7 @@
 <template>
     <div class="top">
         <h3>VRMA, BVHをアップロードして VRMを動かすやつ</h3>
-        <p>mocopiで作成できるBVH(.bvh)やそのBVHをVRMA(.vrma)に変換したファイルを<br />アップロードするとVRMが動きます</p>
+        <p>mocopiで作成できるBVH(.bvh)やそのBVHをVRMA(.vrma)に変換したファイルを<br />アップロードするとVRMが動きます</p>     
         <div class="container">
             <label for="vrmfile">VRMファイル(.vrm)を選択してください</label>
             <input type="file" if="vrmfile" :onchange="onChangeVrmFile"/>
@@ -25,10 +25,10 @@
         <div id="viewer"></div>
         <div>
             <h3>参考サイト</h3>
-            <p>
-                <a href="https://vrm-c.github.io/bvh2vrma/" target="_blank">bvh2vrma</a>
-                BVHファイルをVRMAnimationに変換するサイト
-            </p>
+            <p><a href="https://vrm-c.github.io/bvh2vrma/" target="_blank">bvh2vrma</a></p>
+            <p>BVHファイルをVRMAnimationに変換するサイト</p>
+            <p><a href="https://github.com/tfuru/vrma-loader-sample" target="_blank">vrma-loader-sample</a></p>
+            <p>このサイトのソースコードなど一式</p>
         </div>      
     </div>
 </template>
