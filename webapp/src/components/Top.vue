@@ -27,6 +27,8 @@
             <h3>参考サイト</h3>
             <p><a href="https://vrm-c.github.io/bvh2vrma/" target="_blank">bvh2vrma</a></p>
             <p>BVHファイルをVRMAnimationに変換するサイト</p>
+            <p><a href="https://github.com/malaybaku/AnimationClipToVrmaSample" target="_blank">AnimationClipToVrmaSample</a></p>
+            <p><a href="https://twitter.com/baku_dreameater">@baku_dreameater</a> さん作の<br>ヒューマノイドのモーションからなるAnimation Clipを VRM Animation (.vrma) に変換するプロジェクト</p>            
             <p><a href="https://github.com/tfuru/vrma-loader-sample" target="_blank">vrma-loader-sample</a></p>
             <p>このサイトのソースコードなど一式</p>
         </div>      
