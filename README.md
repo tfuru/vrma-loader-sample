@@ -9,8 +9,8 @@ https://tfuru.github.io/vrma-loader-sample/
 
 ## モーションデータ
 
-Super Yuppers Kpop  
-https://setsukochannel.booth.pm/items/3598971  
+[BVHファイル](https://tfuru.github.io/vrma-loader-sample/sample.bvh)  
+[VRMAファイル](https://tfuru.github.io/vrma-loader-sample/sample.vrma)  
 
 ## 参考
 
