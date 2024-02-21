@@ -144,7 +144,6 @@ export default defineComponent({
 
             // VRMAファイルの読み込み         
             const version = (vrm.meta?.version == '1.0') ? 1 : 0;
-            console.log("onChangeVrmaFile version", version);
             vrmaLoader.load(url, vrm, version, (result: { clip: THREE.AnimationClip; }) => {
                 _mixer = new THREE.AnimationMixer(vrm.scene);               
                 const action = _mixer.clipAction(result.clip);
