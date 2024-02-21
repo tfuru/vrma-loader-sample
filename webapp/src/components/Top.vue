@@ -128,7 +128,7 @@ export default defineComponent({
             const url = URL.createObjectURL(blob);
 
             // BVHファイルの読み込み
-            const version = vrm.meta?.version ?? 0;
+            const version = (vrm.meta?.version == '1.0') ? 1 : 0;
             bvhLoader.load(url, vrm, version, (result: { clip: THREE.AnimationClip; }) => {
                 _mixer = new THREE.AnimationMixer(vrm.scene);               
                 const action = _mixer.clipAction(result.clip);
@@ -143,7 +143,8 @@ export default defineComponent({
             const url = URL.createObjectURL(blob);
 
             // VRMAファイルの読み込み         
-            const version = vrm.meta?.version ?? 0;
+            const version = (vrm.meta?.version == '1.0') ? 1 : 0;
+            console.log("onChangeVrmaFile version", version);
             vrmaLoader.load(url, vrm, version, (result: { clip: THREE.AnimationClip; }) => {
                 _mixer = new THREE.AnimationMixer(vrm.scene);               
                 const action = _mixer.clipAction(result.clip);
