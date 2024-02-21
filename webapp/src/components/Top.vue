@@ -58,7 +58,7 @@ export default defineComponent({
         const bvhLoader = new BVHLoader();
         const vrmaLoader = new VRMALoader();
 
-        let _vrm: any = null;
+        let vrm: any = null;
         let _mixer: THREE.AnimationMixer | null = null;
         const vrmFilePath = './po03.vrm';
 
@@ -106,16 +106,16 @@ export default defineComponent({
         // VRM ファイルを読み込む
         const loadVrmFile = (vrmFilePath: string) => {
             // シーンから VRMを削除
-            if (_vrm != null) {
-                scene.remove(_vrm.scene);
+            if (vrm != null) {
+                scene.remove(vrm.scene);
             }
             
             // VRM ファイルを読み込む
             loader.load(
                 vrmFilePath,
                 (gltf: { userData: { vrm: any; }; }) => {
-                    _vrm = gltf.userData.vrm;
-                    scene.add(_vrm.scene);
+                    vrm = gltf.userData.vrm;
+                    scene.add(vrm.scene);
                     render();
                 },
                 (progress: { loaded: number; total: number; }) => console.log('Loading model...', 100.0 * (progress.loaded / progress.total), '%'),
@@ -130,8 +130,8 @@ export default defineComponent({
 
             // BVHファイルの読み込み
             bvhLoader.load(url, (result: { clip: any; }) => {
-                _mixer = new THREE.AnimationMixer(_vrm.scene);                        
-                const animationClip = createClip(_vrm, result);
+                _mixer = new THREE.AnimationMixer(vrm.scene);                        
+                const animationClip = createClip(vrm, result);
                 const action = _mixer.clipAction(animationClip);
                 action.play();
             });
@@ -144,8 +144,11 @@ export default defineComponent({
             const url = URL.createObjectURL(blob);
 
             // VRMAファイルの読み込み
-            vrmaLoader.load(url, _vrm, (result: { clip: THREE.AnimationClip; }) => {
-                _mixer = new THREE.AnimationMixer(_vrm.scene);               
+            console.log("onChangeVrmaFile", vrm);
+            
+            const version = vrm.meta?.version ?? 0;
+            vrmaLoader.load(url, vrm, version, (result: { clip: THREE.AnimationClip; }) => {
+                _mixer = new THREE.AnimationMixer(vrm.scene);               
                 const action = _mixer.clipAction(result.clip);
                 action.play();
             });
