@@ -59,7 +59,7 @@ export class CanvasCapture {
                         await CanvasCapture._ffmpeg.writeFile('capture.webm', await fetchFile(dataURL));
                         console.log('ffmpeg writeFile');
                         progress("progress", "ffmpeg writeFile", 0);
-                        await CanvasCapture._ffmpeg.exec(['-i', 'capture.webm', '-vcodec', 'copy', '-an', 'capture.mp4']);
+                        await CanvasCapture._ffmpeg.exec(['-i', 'capture.webm', '-an', 'capture.mp4']);
                         console.log('ffmpeg exec');
                         progress("progress", "ffmpeg exec", 0);
                         const data = await CanvasCapture._ffmpeg.readFile('capture.mp4');
