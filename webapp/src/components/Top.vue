@@ -40,14 +40,12 @@ import { defineComponent, onMounted, ref } from 'vue';
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-// import { BVHLoader } from 'three/examples/jsm/loaders/BVHLoader.js'
 import { VRMLoaderPlugin } from '@pixiv/three-vrm';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import { VRMALoader } from './modules/VRMALoader'
 import { MocopiBVHLoader } from './modules/MocopiBVHLoader'
 import { CanvasCapture } from './modules/CanvasCapture'
-
 
 export default defineComponent({
     name: 'TopComponent',
