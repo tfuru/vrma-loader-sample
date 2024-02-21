@@ -58,6 +58,7 @@ export default defineComponent({
         const vrmaLoader = new VRMALoader();
 
         let vrm: any = null;
+        let version = 0;
         let _mixer: THREE.AnimationMixer | null = null;
         const vrmFilePath = './po03.vrm';
 
@@ -112,8 +113,11 @@ export default defineComponent({
             // VRM ファイルを読み込む
             loader.load(
                 vrmFilePath,
-                (gltf: { userData: { vrm: any; }; }) => {
+                (gltf: { userData: { vrm: any, gltfExtensions: any }; }) => {
+                    console.log('Loading model...', gltf);
                     vrm = gltf.userData.vrm;
+                    version = (gltf.userData?.gltfExtensions?.VRMC_vrm != null) ? 1 : 0;
+                    // console.log('Loading version', version);
                     scene.add(vrm.scene);
                     render();
                 },
@@ -128,7 +132,6 @@ export default defineComponent({
             const url = URL.createObjectURL(blob);
 
             // BVHファイルの読み込み
-            const version = (vrm.meta?.version == '1.0') ? 1 : 0;
             bvhLoader.load(url, vrm, version, (result: { clip: THREE.AnimationClip; }) => {
                 _mixer = new THREE.AnimationMixer(vrm.scene);               
                 const action = _mixer.clipAction(result.clip);
@@ -143,7 +146,6 @@ export default defineComponent({
             const url = URL.createObjectURL(blob);
 
             // VRMAファイルの読み込み         
-            const version = (vrm.meta?.version == '1.0') ? 1 : 0;
             vrmaLoader.load(url, vrm, version, (result: { clip: THREE.AnimationClip; }) => {
                 _mixer = new THREE.AnimationMixer(vrm.scene);               
                 const action = _mixer.clipAction(result.clip);
